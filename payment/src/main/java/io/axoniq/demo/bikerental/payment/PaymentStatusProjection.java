@@ -4,6 +4,9 @@ import io.axoniq.demo.bikerental.coreapi.payment.PaymentConfirmedEvent;
 import io.axoniq.demo.bikerental.coreapi.payment.PaymentPreparedEvent;
 import io.axoniq.demo.bikerental.coreapi.payment.PaymentRejectedEvent;
 import io.axoniq.demo.bikerental.coreapi.payment.PaymentStatus;
+import io.axoniq.demo.bikerental.coreapi.rental.BikeRegisteredEvent;
+import io.axoniq.demo.bikerental.coreapi.rental.BikeStatus;
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
@@ -13,6 +16,7 @@ import static io.axoniq.demo.bikerental.coreapi.payment.PaymentStatus.Status.APP
 import static io.axoniq.demo.bikerental.coreapi.payment.PaymentStatus.Status.PENDING;
 import static io.axoniq.demo.bikerental.coreapi.payment.PaymentStatus.Status.REJECTED;
 
+@ProcessingGroup("kafkaProcessor")
 @Component
 public class PaymentStatusProjection {
 
@@ -32,6 +36,7 @@ public class PaymentStatusProjection {
 
     @QueryHandler(queryName = "getPaymentId")
     public String getPaymentId(String paymentReference) {
+        System.out.println("Get Payment Id: " + paymentReference);
         return paymentStatusRepository.findByReferenceAndStatus(paymentReference, PENDING).map(PaymentStatus::getId).orElse(null);
     }
 
@@ -62,5 +67,16 @@ public class PaymentStatusProjection {
     @EventHandler
     public void handle(PaymentRejectedEvent event) {
         paymentStatusRepository.findById(event.paymentId()).ifPresent(s -> s.setStatus(REJECTED));
+    }
+
+
+    @EventHandler  //<.>
+    public void on(BikeRegisteredEvent event) { //<.>
+        System.out.println("Bike registered event here " + event.getBikeId());
+        var bikeStatus = new BikeStatus(event.getBikeId(), event.getBikeType(), event.getLocation()); //<.>
+        //bikeStatusRepository.save(bikeStatus); //<.>
+        //tag::UpdateEmitter[]
+        updateEmitter.emit(q -> "findAll".equals(q.getQueryName()), bikeStatus); //<.>
+        //end::UpdateEmitter[]
     }
 }

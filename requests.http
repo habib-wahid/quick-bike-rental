@@ -1,14 +1,14 @@
 ### Register a new bike
-POST {{rental}}/bikes?bikeType=city&location=Utrecht
+POST http://localhost:8081/bikes?bikeType=city&location=Utrecht
 
 ### Generate bikes
 # First, generate some bikes
-POST {{rental}}/bikes/batch?count=60&type=city
+POST http://localhost:8080/bikes/batch?count=1&type=city
 Accept: application/json
 
 ### List all
 # Show available bikes
-GET {{rental}}/bikes
+GET http://localhost:8081/bikes
 Accept: application/json
 
 ### Bike status
@@ -28,7 +28,7 @@ Accept: application/json
 
 ### Accept Payment
 # Accept a payment
-POST {{payment}}/acceptPayment?id=5588a0ca-c5b2-45e5-aa54-e9a80c91c549
+POST http://localhost:8081/acceptPayment?id=5588a0ca-c5b2-45e5-aa54-e9a80c91c549
 Accept: application/json
 
 ### Reject Payment
@@ -47,5 +47,9 @@ POST {{rental}}/returnBike?bikeId=28dc25a1-33cc-42fa-a660-cc19cb8711f1
 Accept: application/json
 
 ### Generate Rentals
-POST {{rental}}/generateRentals?bikeType=city&loops=30&concurrency=10
+POST http://localhost:8080/generateRentals?bikeType=city&loops=3&concurrency=2
+Accept: text/plain
+
+### Generate Rentals
+POST http://localhost:8081/payment?status=Pending&amount=10&reference=abc564sd
 Accept: text/plain

@@ -28,6 +28,10 @@
             <groupId>org.axonframework</groupId>
             <artifactId>axon-modelling</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
         <!-- end::deps-axon-modelling[] -->
     </dependencies>
     <!-- end::dependencies[] -->

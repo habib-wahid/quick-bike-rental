@@ -44,7 +44,7 @@
 		<java.version>21</java.version>
 		<!-- end::props-java21[] -->
 		<!-- tag::props-axonframework[] -->
-        <axon.version>4.9.4</axon.version>
+        <axon.version>4.10.0</axon.version>
 		<!-- end::props-axonframework[] -->
 		<!-- tag::props-axoniq-console-client[] -->
 		<console-framework-client.version>1.7.3</console-framework-client.version>
@@ -83,15 +83,15 @@
     <!-- end::dependencyManagement[] -->
 
     <!-- tag::dependencies[] -->
-	<dependencies>
-		<!-- tag::deps-springboot-docker-compose[] -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-docker-compose</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-		<!-- end::deps-springboot-docker-compose[] -->
-	</dependencies>
+<!--	<dependencies>-->
+<!--		&lt;!&ndash; tag::deps-springboot-docker-compose[] &ndash;&gt;-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-docker-compose</artifactId>-->
+<!--			<scope>runtime</scope>-->
+<!--			<optional>true</optional>-->
+<!--		</dependency>-->
+<!--		&lt;!&ndash; end::deps-springboot-docker-compose[] &ndash;&gt;-->
+<!--	</dependencies>-->
 	<!-- end::dependencies[] -->
 </project>

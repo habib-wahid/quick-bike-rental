@@ -2,9 +2,10 @@ package io.axoniq.demo.bikerental.coreapi.rental;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 //tag::BikeStatusEntity[]
-@Entity //<.>
+@Document(value = "bikes") //<.>
 //end::BikeStatusEntity[]
 //tag::BikeStatusClass[]
 public class BikeStatus {

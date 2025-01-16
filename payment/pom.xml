@@ -32,6 +32,12 @@
         <dependency>
             <groupId>org.axonframework</groupId>
             <artifactId>axon-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.axonframework</groupId>
+                    <artifactId>axon-server-connector</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.axonframework</groupId>
@@ -64,10 +70,10 @@
         </dependency>
         <!-- end::deps-springboot-starter-actuator[] -->
         <!-- tag::deps-springboot-jpa[] -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-data-jpa</artifactId>-->
+<!--        </dependency>-->
         <!-- end::deps-springboot-jpa[] -->
         <!-- tag::deps-springboot-webflux[] -->
         <dependency>
@@ -81,7 +87,21 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- end::deps-springboot-tests[] -->
+        <dependency>
+            <groupId>org.axonframework.extensions.mongo</groupId>
+            <artifactId>axon-mongo-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.axonframework.extensions.kafka/axon-kafka-spring-boot-starter -->
+        <dependency>
+            <groupId>org.axonframework.extensions.kafka</groupId>
+            <artifactId>axon-kafka-spring-boot-starter</artifactId>
+            <version>4.10.0</version>
+        </dependency>
+
     </dependencies>
     <!-- end::dependencies[] -->
 

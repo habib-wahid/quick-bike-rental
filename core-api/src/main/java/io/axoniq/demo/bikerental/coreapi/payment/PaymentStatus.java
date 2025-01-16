@@ -2,8 +2,9 @@ package io.axoniq.demo.bikerental.coreapi.payment;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
+@Document(value = "payment")
 public class PaymentStatus {
     @Id
     private String id;

@@ -1,6 +1,8 @@
 package io.axoniq.demo.bikerental.rental;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.security.AnyTypePermission;
 import io.axoniq.demo.bikerental.coreapi.rental.BikeStatus;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -34,6 +36,13 @@ public class RentalApplication {
         SpringApplication.run(RentalApplication.class, args);
     }
 
+//    @Bean
+//    public KafkaCommandBus kafkaCommandBus(Configuration axonConfiguration) {
+//        return KafkaCommandBus.builder()
+//                .configuration(axonConfiguration)
+//                .build();
+//    }
+
     //configuring retry scheduler for command gateway.  This will handle retrying if a non-transient exception occurs
     //when attempting to send a command
     //https://docs.axoniq.io/reference-guide/axon-framework/axon-framework-commands/infrastructure#retryscheduler
@@ -66,6 +75,7 @@ public class RentalApplication {
         objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(),
                                            ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT);
     }
+
 
     @Bean
     public ConfigurerModule eventProcessingCustomizer() {

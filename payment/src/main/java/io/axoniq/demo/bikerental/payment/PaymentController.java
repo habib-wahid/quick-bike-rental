@@ -19,10 +19,12 @@ public class PaymentController {
 
     private final QueryGateway queryGateway;
     private final CommandGateway commandGateway;
+    private final PaymentStatusRepository paymentStatusRepository;
 
-    public PaymentController(QueryGateway queryGateway, CommandGateway commandGateway) {
+    public PaymentController(QueryGateway queryGateway, CommandGateway commandGateway, PaymentStatusRepository paymentStatusRepository) {
         this.queryGateway = queryGateway;
         this.commandGateway = commandGateway;
+        this.paymentStatusRepository = paymentStatusRepository;
     }
 
     @GetMapping("/status/{paymentId}")
@@ -37,6 +39,7 @@ public class PaymentController {
 
     @PostMapping("/acceptPayment")
     public CompletableFuture<Void> confirmPayment(@RequestParam("id") String paymentId) {
+        System.out.println("payment Id " + paymentId);
         return commandGateway.send(new ConfirmPaymentCommand(paymentId));
     }
 
@@ -48,6 +51,13 @@ public class PaymentController {
     @GetMapping("/status")
     public Flux<PaymentStatus> getStatus(@RequestParam(value = "status", required = false) PaymentStatus.Status status) {
         return Flux.from(queryGateway.streamingQuery("getAllPayments", status, PaymentStatus.class));
+    }
+
+    @PostMapping("/payment")
+    public void payment(@RequestParam("status") String status,
+                        @RequestParam("amount") Integer amount,
+                        @RequestParam("reference") String reference) {
+        paymentStatusRepository.save(new PaymentStatus(status, amount, reference));
     }
 
 }

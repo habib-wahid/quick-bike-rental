@@ -7,6 +7,7 @@ import io.axoniq.demo.bikerental.coreapi.payment.PaymentRejectedEvent;
 import io.axoniq.demo.bikerental.coreapi.payment.PreparePaymentCommand;
 import io.axoniq.demo.bikerental.coreapi.payment.RejectPaymentCommand;
 import org.axonframework.commandhandling.CommandHandler;
+import org.axonframework.config.ProcessingGroup;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
@@ -14,6 +15,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 import java.util.UUID;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
+
 
 @Aggregate
 public class Payment {
@@ -35,6 +37,7 @@ public class Payment {
 
     @CommandHandler
     public void handle(ConfirmPaymentCommand command) {
+        System.out.println("Confirm command");
         if (!closed) {
             apply(new PaymentConfirmedEvent(command.paymentId(), paymentReference));
         }
