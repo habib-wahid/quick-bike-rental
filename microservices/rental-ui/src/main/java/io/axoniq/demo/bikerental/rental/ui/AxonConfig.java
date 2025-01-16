@@ -68,7 +68,7 @@ public class AxonConfig {
                         "key.serializer", "org.apache.kafka.common.serialization.StringSerializer",
                         "value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer"
                 ))
-                .confirmationMode(ConfirmationMode.WAIT_FOR_ACK)
+                .confirmationMode(ConfirmationMode.NONE)
                 .transactionalIdPrefix("my-transaction-")
                 .build();
     }

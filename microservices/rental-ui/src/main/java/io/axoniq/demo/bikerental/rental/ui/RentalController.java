@@ -62,27 +62,28 @@ public class RentalController {
             @RequestParam("bikeType") String bikeType,      // <.>
             @RequestParam("location") String location) {    // <.>
 
-//        RegisterBikeCommand registerBikeCommand =
-//                new RegisterBikeCommand(                // <.>
-//                        UUID.randomUUID().toString(),   // <.>
-//                        bikeType,
-//                        location);
+        RegisterBikeCommand registerBikeCommand =
+                new RegisterBikeCommand(                // <.>
+                        UUID.randomUUID().toString(),   // <.>
+                        bikeType,
+                        location);
 
 
         BikeRegisterEvent bikeRegisterEvent = new BikeRegisterEvent(
                 UUID.randomUUID().toString(), bikeType, location
         );
 
+        commandGateway.send(registerBikeCommand);
        // ProducerRecord<String, byte[]> record = CustomMessageConverter.createKafkaMessage(bikeRegisterEvent, "axon-events");
 
-        UnitOfWork<?> unitOfWork = DefaultUnitOfWork.startAndGet(null);
-        try {
-            publisher.send(bikeRegisterEvent);
-            unitOfWork.commit();
-        } catch (Exception e) {
-            unitOfWork.rollback(e);
-            throw e; // rethrow the exception if necessary
-        }
+//        UnitOfWork<?> unitOfWork = DefaultUnitOfWork.startAndGet(null);
+//        try {
+//            publisher.send(bikeRegisterEvent);
+//            unitOfWork.commit();
+//        } catch (Exception e) {
+//            unitOfWork.rollback(e);
+//            throw e; // rethrow the exception if necessary
+//        }
 
         System.out.println("Bike register command " + bikeRegisterEvent.getBikeId());
     //    publisher.send(bikeRegisterEvent);
