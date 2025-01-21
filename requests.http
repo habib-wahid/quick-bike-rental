@@ -55,12 +55,12 @@ POST http://localhost:8081/payment?status=Pending&amount=10&reference=abc564sd
 Accept: text/plainread_db
 
 ### Generate Distributed Rentals
-POST http://localhost:8080/generateBikeRentals?bikeId=062efd33-58e0-467f-bfa2-475e5266378a&loops=3&concurrency=2
+POST http://localhost:8080/generateBikeRentals?bikeId=ae3faa27-6b36-4794-89ce-d949f6e33815&loops=3&concurrency=2
 Accept: text/plain
 
 
 ###
-POST http://localhost:8084/confirmPayment?paymentId=7a8beec8-909d-4394-a888-cf70bd25016f&confirmStatus=false
+POST http://localhost:8084/confirmPayment?paymentId=f78a43f1-e19b-4e76-87fd-62fe243b188b&confirmStatus=false
 Accept: text/plain
 
 ###
