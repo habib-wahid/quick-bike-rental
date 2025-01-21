@@ -3,6 +3,10 @@ package io.axoniq.demo.bikerental.rental.command.controller;
 
 import io.axoniq.demo.bikerental.coreapi.payment.ConfirmPaymentCommand;
 import io.axoniq.demo.bikerental.coreapi.rental.*;
+import io.axoniq.demo.bikerental.rental.command.dto.RentalResponse;
+//import io.axoniq.demo.bikerental.rental.command.repository.BikeStatusRepository;
+import io.axoniq.demo.bikerental.rental.command.entity.BikeCollection;
+import io.axoniq.demo.bikerental.rental.command.repository.BikeCollectionRepository;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -30,12 +34,16 @@ public class BikeRentalDataGenerator {
 
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
+    private final BikeCollectionRepository bikeCollectionRepository;
+  //  private final BikeStatusRepository bikeStatusRepository;
 
     Logger logger = LoggerFactory.getLogger(BikeRentalDataGenerator.class);
 
-    public BikeRentalDataGenerator(CommandGateway commandGateway, QueryGateway queryGateway) {
+    public BikeRentalDataGenerator(CommandGateway commandGateway, QueryGateway queryGateway, BikeCollectionRepository bikeCollectionRepository) {
         this.commandGateway = commandGateway;
         this.queryGateway = queryGateway;
+      //  this.bikeStatusRepository = bikeStatusRepository;
+        this.bikeCollectionRepository = bikeCollectionRepository;
     }
 
 
@@ -121,6 +129,7 @@ public class BikeRentalDataGenerator {
                 .map(o -> bikeId)
                 .toFuture();
     }
+
     private CompletableFuture<String> whenBikeUnlocked(String bikeId) {
         SubscriptionQueryResult<BikeStatus, BikeStatus> queryResult = queryGateway.subscriptionQuery(BikeStatusNamedQueries.FIND_ONE, bikeId, BikeStatus.class, BikeStatus.class);
         return queryResult.initialResult().concatWith(queryResult.updates())
@@ -129,6 +138,7 @@ public class BikeRentalDataGenerator {
                 .doOnNext(n -> queryResult.close())
                 .toFuture();
     }
+
     private int randomDelay(int delay) {
         if (delay <= 0) {
             return 0;
@@ -139,5 +149,36 @@ public class BikeRentalDataGenerator {
     private <T> T pickRandom(List<T> source) {
         return source.get(ThreadLocalRandom.current().nextInt(source.size()));
     }
-}
 
+    public  CompletableFuture<String> generateBikeRentals(String bikeId,
+                                              int loops,
+                                              int concurrency,
+                                              int abandonPaymentFactor,
+                                              int delay) {
+
+         return this.internalBikeGenerateRentals(bikeId, loops, concurrency, abandonPaymentFactor, delay);
+
+    }
+
+    private  CompletableFuture<String> internalBikeGenerateRentals(String bikeId,
+                                             int loops,
+                                             int concurrency,
+                                             int abandonPaymentFactor,
+                                             int delay) {
+   //     List<BikeStatus> bikeStatus = bikeStatusRepository.findByBikeId(bikeId);
+        String randomRenter = randomRenter();
+        BikeCollection bikeCollection = bikeCollectionRepository.findById(bikeId).get();
+        bikeCollection.setStatus(RentalStatus.REQUESTED);
+        bikeCollection.setRenter(randomRenter);
+        bikeCollectionRepository.save(bikeCollection);
+        return commandGateway.send(new RequestBikeCommand(bikeId, randomRenter));
+
+    }
+
+    private void executeRentalPayment(String bikeId, String paymentRef, int abandonPaymentFactor) {
+        if (abandonPaymentFactor > 0 && ThreadLocalRandom.current().nextInt(abandonPaymentFactor) == 0) {
+            throw new IllegalStateException("Customer refused to pay");
+        }
+
+    }
+}

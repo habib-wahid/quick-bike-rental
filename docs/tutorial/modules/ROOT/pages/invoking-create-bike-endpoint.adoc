@@ -10,7 +10,7 @@ Now that we have our xref::implement-create-bike.adoc[first feature implemented]
 To test our feature, we need to send the following HTTP request:
 
 
-    POST http://localhost:8080/bikes?bikeType={type}&location={city}
+    POST http://localhost:8080/bikeCollection?bikeType={type}&location={city}
 
 You can do this directly from the command line, any other HTTP REST client you are used to, or if you are using IntelliJ IDEA as your IDE, we will show you how to prepare a file to quickly execute the HTTP Endpoints we are going to use in this project.
 
@@ -20,7 +20,7 @@ You can easily invoke the endpoint from the command line by typing the following
 
 [,console]
 ----
-> curl -X POST "http://localhost:8080/bikes?bikeType=city&location=Utrecht"
+> curl -X POST "http://localhost:8080/bikeCollection?bikeType=city&location=Utrecht"
 
 ----
 
@@ -41,7 +41,7 @@ Start by creating a text file called `requests.http` in your root project, and a
 ./requests.http
 ----
 ### Register a new bike
-POST http://localhost:8080/bikes?bikeType=city&location=Utrecht
+POST http://localhost:8080/bikeCollection?bikeType=city&location=Utrecht
 
 ###
 ----
@@ -50,7 +50,7 @@ Save the file, and you will see that IntelliJ IDEA now decorates the line contai
 
 [source]
 ----
-POST http://localhost:8080/bikes?bikeType=city&location=Utrecht
+POST http://localhost:8080/bikeCollection?bikeType=city&location=Utrecht
 
 HTTP/1.1 200 OK
 Vary: Origin

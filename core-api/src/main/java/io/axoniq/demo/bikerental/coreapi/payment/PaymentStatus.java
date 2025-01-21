@@ -12,6 +12,7 @@ public class PaymentStatus {
     private Status status;
     private int amount;
     private String reference;
+    private String bikeId;
 
     public PaymentStatus() {
     }
@@ -21,10 +22,27 @@ public class PaymentStatus {
         this.amount = amount;
         this.reference = reference;
         this.status = Status.PENDING;
+
+    }
+
+    public PaymentStatus(String id, int amount, String reference, String bikeId) {
+        this.id = id;
+        this.amount = amount;
+        this.reference = reference;
+        this.status = Status.PENDING;
+        this.bikeId = bikeId;
     }
 
     public String getId() {
         return id;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public String getBikeId() {
+        return bikeId;
     }
 
     public Status getStatus() {

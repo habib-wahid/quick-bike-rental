@@ -15,7 +15,7 @@ Although we will work on our rental module, we want to build it as a *modular mo
 
 ** *UI/API*: Components that receive requests directly from the user or external applications. We will implement our application's interface to users or other applications using a REST API.
 ** *Command Model*: These are the components that receive all the requests that, as a result of processing them, imply a change in the state of our system. Requests like "Register a new bike", "Rent a bike" or "Return a bike" are a few examples of Commands
-** *Query Model* (also known as *Projections*): Composed of components that will handle the requests for information (or queries). In order to reply as fast as possible, these components will keep the data from our system structured as close as possible to how the user expects the information in the response. For example, imagine that our application needs to support requests to get a complete list of all the bikes and their availability status. In that case, a component (a Projection) will keep the list of all the bikes with their state up to date and ready to be sent back when requested.
+** *Query Model* (also known as *Projections*): Composed of components that will handle the requests for information (or queries). In order to reply as fast as possible, these components will keep the data from our system structured as close as possible to how the user expects the information in the response. For example, imagine that our application needs to support requests to get a complete list of all the bikeCollection and their availability status. In that case, a component (a Projection) will keep the list of all the bikeCollection with their state up to date and ready to be sent back when requested.
 
 * Components *loosely coupled*: we will use *messages* (like Commands, Events or Queries) to communicate the different logical modules.
 * *Location transparency*: we want to rely on abstractions that allow our components not to have to deal with the specific details of how to reach other components to deliver a message. For example, the UI (whose responsibility is to receive HTTP requests and forward the right message to the appropriate handler, either in the Command Model or in the Query Model) should not have to know which is the specific component that will handle and process the request.
@@ -32,7 +32,7 @@ These could be separate modules, but for now, we are going to consider these jus
 
 :needs-improvement: Add a reference to the types of messages and what a command message is.
 
-When the application receives a request to create a bike, that implies that the state of our application will change because, after successfully processing it, we will have a new bike in our system (so, the list of available bikes -our application's state- will have changed). So, we will model our request as a `Command`; in our case, we will call it `RegisterBikeCommand`.
+When the application receives a request to create a bike, that implies that the state of our application will change because, after successfully processing it, we will have a new bike in our system (so, the list of available bikeCollection -our application's state- will have changed). So, we will model our request as a `Command`; in our case, we will call it `RegisterBikeCommand`.
 
 So, the `RegisterBikeCommand` will be routed to the `Command Model`, where we will implement a handler method to process it. That method must create the new `Bike` in our system and notify that "a new bike has been registered" to other components interested in this change.
 
@@ -195,7 +195,7 @@ We must add a method in our controller to handle the HTTP Request to register a 
 
 For this endpoint, we will consider the following request format:
 
-    POST /bikes?bikeType={bikeType}&location={city}
+    POST /bikeCollection?bikeType={bikeType}&location={city}
 
 NOTE: When designing a REST endpoint that registers a new element in our system, it is usual to model the API to use a POST request, which contains the information of the entity to create in the body. In this first example, for the sake of simplicity, we will receive the bike details as parameters on the request.
 

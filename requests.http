@@ -1,23 +1,23 @@
 ### Register a new bike
-POST http://localhost:8081/bikes?bikeType=city&location=Utrecht
+POST http://localhost:8080/bikes?bikeType=city&location=Moscow
 
-### Generate bikes
-# First, generate some bikes
-POST http://localhost:8080/bikes/batch?count=1&type=city
+### Generate bikeCollection
+# First, generate some bikeCollection
+POST http://localhost:8080/bikeCollection/batch?count=3&type=city
 Accept: application/json
 
 ### List all
-# Show available bikes
-GET http://localhost:8081/bikes
+# Show available bikeCollection
+GET http://localhost:8083/bikes
 Accept: application/json
 
 ### Bike status
 # Show bike status
-GET {{rental}}/bikes/f6dd253e-8398-48c3-b7f1-49c52c21c594
+GET {{rental}}/bikeCollection/f6dd253e-8398-48c3-b7f1-49c52c21c594
 Accept: application/json
 
 ### Request Bike
-# Request one of the available bikes
+# Request one of the available bikeCollection
 POST {{rental}}/requestBike?bikeId=f6dd253e-8398-48c3-b7f1-49c52c21c594
 Accept: application/json
 
@@ -38,7 +38,7 @@ Accept: application/json
 
 ### Bike status (2)
 # Show bike status
-GET {{rental}}/bikes/91480d9a-20e3-43a7-a88f-8712365a4f4c
+GET {{rental}}/bikeCollection/91480d9a-20e3-43a7-a88f-8712365a4f4c
 Accept: application/json
 
 ### Return bike
@@ -52,4 +52,17 @@ Accept: text/plain
 
 ### Generate Rentals
 POST http://localhost:8081/payment?status=Pending&amount=10&reference=abc564sd
+Accept: text/plainread_db
+
+### Generate Distributed Rentals
+POST http://localhost:8080/generateBikeRentals?bikeId=062efd33-58e0-467f-bfa2-475e5266378a&loops=3&concurrency=2
+Accept: text/plain
+
+
+###
+POST http://localhost:8084/confirmPayment?paymentId=7a8beec8-909d-4394-a888-cf70bd25016f&confirmStatus=false
+Accept: text/plain
+
+###
+GET http://localhost:8083/getBike?bikeId=
 Accept: text/plain

@@ -17,7 +17,7 @@ include::partial$messages-flow-diagram.adoc[]
 
 If, as we have just stated, our projection component will focus on handling queries to request information from our system, the first thing we need to consider when designing the query model is the exact request we will handle and how we will return the information.
 
-In this case, we will implement support in our application to return information about one or more bikes, including where the bike is, whether it is available or rented and who has rented it.
+In this case, we will implement support in our application to return information about one or more bikeCollection, including where the bike is, whether it is available or rented and who has rented it.
 
 So, we will model all the information expected from these queries in the `BikeStatus` class. We will define this class in the `core-api`:
 
@@ -99,7 +99,7 @@ With these changes we are ready to define the methods in our `BikeStatusProjecti
 
 === Define the `BikeRegisteredEvent` handler.
 
-To keep the list of our bikes in the query model up to date, we need to define a method that will be invoked whenever a new bike is registered in the system (the `BikeRegisteredEvent` represents that notification). We can do this by adding an `@EventHandler` method to our `BikeStatusProjection`:
+To keep the list of our bikeCollection in the query model up to date, we need to define a method that will be invoked whenever a new bike is registered in the system (the `BikeRegisteredEvent` represents that notification). We can do this by adding an `@EventHandler` method to our `BikeStatusProjection`:
 
 [source,java]
 .rental/src/main/java/io/axoniq/demo/bikerental/rental/query/BikeStatusProjection.java
@@ -136,9 +136,9 @@ include::example$core-api/src/main/java/io/axoniq/demo/bikerental/coreapi/rental
 Now that we have the names of the queries defined, let's define the methods that will handle and respond them.
 
 
-=== Implement a query to return all the bikes.
+=== Implement a query to return all the bikeCollection.
 
-Let's start by implementing a method to return all the bikes (with their status) defined in our system. Add the following method to your `BikeStatusProjection` class:
+Let's start by implementing a method to return all the bikeCollection (with their status) defined in our system. Add the following method to your `BikeStatusProjection` class:
 
 [source,java]
 .rental/src/main/java/io/axoniq/demo/bikerental/rental/query/BikeStatusProjection.java
@@ -146,17 +146,17 @@ Let's start by implementing a method to return all the bikes (with their status)
 include::example$rental/src/main/java/io/axoniq/demo/bikerental/rental/query/BikeStatusProjection.java[tags=ClassDefinition;findAllQueryHandler;!*]
 ----
 <.> The `org.axonframework.queryhandling.QueryHandler` annotation instructs Axon Framework to register this method as a target to invoke for certain types of queries. In this case, we identify the queries by name (although the type of the query message could also identify them, but we will see an example of that later), and we declare the specific name of the query to be handled by this method with the `queryName` attribute.
-<.> Since our query has no parameters (we want to retrieve the information for *all the bikes* in our system), our query handler method does not receive any parameters. It only needs to return the list of items we find in our DB.
+<.> Since our query has no parameters (we want to retrieve the information for *all the bikeCollection* in our system), our query handler method does not receive any parameters. It only needs to return the list of items we find in our DB.
 <.> As we have the information already prepared and aligned with the response format (thanks to the `EventHandler`s), we only need to retrieve the information from the repository and return it.
 
-In short, we have defined a query handler method that Axon Framework will call upon the reception of a query message to `FIND_ALL` the bikes in our system. And the method will simply retrieve the up-to-date information from the DB and return the `BikeStatus` for all the bikes.
+In short, we have defined a query handler method that Axon Framework will call upon the reception of a query message to `FIND_ALL` the bikeCollection in our system. And the method will simply retrieve the up-to-date information from the DB and return the `BikeStatus` for all the bikeCollection.
 
 
 === Implementing support for other queries in our projection.
 
-We may need to support different query requests for information about the bikes in our system. The same projection can be used to satisfy different queries.
+We may need to support different query requests for information about the bikeCollection in our system. The same projection can be used to satisfy different queries.
 
-For example, if we want to support queries to return all the available bikes, filtering by the type, or the `BikeStatus` for a specific bike by its `bikeId`, we can add the following two methods to our `BikeStatusProjection`:
+For example, if we want to support queries to return all the available bikeCollection, filtering by the type, or the `BikeStatus` for a specific bike by its `bikeId`, we can add the following two methods to our `BikeStatusProjection`:
 
 [source,java]
 .rental/src/main/java/io/axoniq/demo/bikerental/rental/query/BikeStatusProjection.java
@@ -187,7 +187,7 @@ Sometimes we need to define additional queries to filter elements according to d
 This is sometimes called *Derived Queries*  and you can learn how to add specific methods for different queries in the section dedicated to https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html#repositories.query-methods.query-creation[Query Creation from the Spring Data Reference guide]
 ====
 
-Now, our `BikeStatusProjection` fully supports answering to queries to `findAll` bikes, `findAvailable` bikes of a certain type, and `findOne` specific bike given its `bikeId`.
+Now, our `BikeStatusProjection` fully supports answering to queries to `findAll` bikeCollection, `findAvailable` bikeCollection of a certain type, and `findOne` specific bike given its `bikeId`.
 
 In the next section we will extend our `RestController` to add endpoints for these queries and route the queries to the system using `Query` messages.
 
@@ -225,7 +225,7 @@ include::example$rental/src/main/java/io/axoniq/demo/bikerental/rental/ui/Rental
 
 === Implementing endpoint for `findAll` query
 
-To implement the method that exposes the endpoint for returning all the bikes and their status, add the following method to our `RestController`:
+To implement the method that exposes the endpoint for returning all the bikeCollection and their status, add the following method to our `RestController`:
 
 [source,java]
 ./rental/src/main/java/io/axoniq/demo/bikerental/rental/iu/RentalController.java
@@ -238,7 +238,7 @@ include::example$rental/src/main/java/io/axoniq/demo/bikerental/rental/ui/Rental
 
 }
 ----
-<.> The `GetMapping` Spring annotation specifies that this method will be invoked whenever a `GET` request to the URL `/bikes` is received by the application.
+<.> The `GetMapping` Spring annotation specifies that this method will be invoked whenever a `GET` request to the URL `/bikeCollection` is received by the application.
 <.> The method will return a list of `BikeStatus` responses. See the info block below for an explanation on returning the `CompletableFuture` or the `List<BikeStatus>` directly.
 <.> We will use the `query` mehtod on the `queryGateway` component provided by AxonFramework to route the query. This method receives three parameters:
 <.> The query. It could be an object or a `String` with the query name. In this case, as the queries are simple ones, we have choosen to use query names.
@@ -288,7 +288,7 @@ include::example$rental/src/main/java/io/axoniq/demo/bikerental/rental/ui/Rental
 
 }
 ----
-<.> The `@GetMapping` annotation configures the method to be invoked when a `GET` request to `/bikes/{bikeId}` is received, and defines the part of the URL that comes after `/bikes/` to be assigned to the `bikeId` path variable.
+<.> The `@GetMapping` annotation configures the method to be invoked when a `GET` request to `/bikeCollection/{bikeId}` is received, and defines the part of the URL that comes after `/bikeCollection/` to be assigned to the `bikeId` path variable.
 <.> The `@PathVariable("bikeId")` annotation instruct Spring to provide to the method argument the value of the URL that matches the `bikeId` path variable.
 <.> We use the `query` method of the `queryGateway` to send the query message. This time, we specify the provide `bikeId` as the query criteria as the second argument, and the `BikeStatus.class` as the type of the response we are expecting from the query.
 
@@ -298,7 +298,7 @@ Now we can run our application again as we described in xref:run-app-with-docker
 
 [NOTE]
 ====
-When we invoked the endpoint to register new bikes after we implemented the command handler, the command handler triggered the corresponding `BikeRegisteredEvent` to notify all the components (like our projection) of the changes.
+When we invoked the endpoint to register new bikeCollection after we implemented the command handler, the command handler triggered the corresponding `BikeRegisteredEvent` to notify all the components (like our projection) of the changes.
 
 Back then, we didn't have our `BikeStatusProjection` implemented, which means we didn't have the event handlers for those `BikeRegisteredEvent`. What happen to those changes? Have we lost those events? How are we going to keep our query model updated?
 
@@ -311,11 +311,11 @@ When we start Axon Server (as configured in the `docker-compose.yml` file), Axon
 
 To test our `findAll` query we simply need to send a `HTTP GET` request to the following endpoint:
 
- http://localhost:8080/bikes
+ http://localhost:8080/bikeCollection
 
 To get the status of a specific bike, we need to send an `HTTP GET` request to the following URL:
 
- http://localhost:8080/bikes/{bikeId}
+ http://localhost:8080/bikeCollection/{bikeId}
 
 
 ==== From the command line
@@ -324,7 +324,7 @@ We can invoke the endpoint from the command line using the `curl` command:
 
 [,console]
 ----
-% curl -X GET "http://localhost:8080/bikes"
+% curl -X GET "http://localhost:8080/bikeCollection"
 [
   {
     "bikeId": "8427681b-1ee6-4e0a-b5d8-c524b9ed553d",
@@ -353,7 +353,7 @@ We can invoke the endpoint from the command line using the `curl` command:
 You can also invoke the `findOne` query:
 [,console]
 ----
-%% curl -X GET "http://localhost:8080/bikes/8427681b-1ee6-4e0a-b5d8-c524b9ed553d"
+%% curl -X GET "http://localhost:8080/bikeCollection/8427681b-1ee6-4e0a-b5d8-c524b9ed553d"
 {
   "bikeId": "8427681b-1ee6-4e0a-b5d8-c524b9ed553d",
   "bikeType": "city",
@@ -372,13 +372,13 @@ If you are using IntelliJ IDEA you can edit the `requests.http` file we created 
 ./requests.http
 ----
 ### List all
-# Show available bikes
-GET {{rental}}/bikes
+# Show available bikeCollection
+GET {{rental}}/bikeCollection
 Accept: application/json
 
 ### Bike status
 # Show bike status
-GET {{rental}}/bikes/8427681b-1ee6-4e0a-b5d8-c524b9ed553d
+GET {{rental}}/bikeCollection/8427681b-1ee6-4e0a-b5d8-c524b9ed553d
 Accept: application/json
 
 ###
@@ -388,7 +388,7 @@ Now you can click on the green "play" icon that is shown right to the left of th
 
 [source,console]
 ----
-GET http://localhost:8080/bikes
+GET http://localhost:8080/bikeCollection
 
 HTTP/1.1 200 OK
 Vary: Origin

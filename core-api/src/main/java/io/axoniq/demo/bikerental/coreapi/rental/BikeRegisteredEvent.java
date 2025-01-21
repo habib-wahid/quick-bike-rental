@@ -1,10 +1,14 @@
 package io.axoniq.demo.bikerental.coreapi.rental;
 
+
 public class BikeRegisteredEvent {
     private String bikeId;
     private String bikeType;
     private String location;
-    
+
+    public BikeRegisteredEvent() {
+
+    }
     public BikeRegisteredEvent(String bikeId, String bikeType, String location) {
         this.bikeId = bikeId;
         this.bikeType = bikeType;

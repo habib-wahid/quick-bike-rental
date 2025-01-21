@@ -97,7 +97,7 @@ If you click on the "Overview" button from the right panel, you will see the Axo
 
 image::image$AxonServer-Dashboard.png[Screenshot of the Axon Server dashboard, showing the Rental Application connected to the Axon Server instance]
 
-In the next step we will implement a feature that retrieves a list of all the bikes in our system. In doing so, we will look at how to implement the `Query Model` with some projections.
+In the next step we will implement a feature that retrieves a list of all the bikeCollection in our system. In doing so, we will look at how to implement the `Query Model` with some projections.
 
 
 

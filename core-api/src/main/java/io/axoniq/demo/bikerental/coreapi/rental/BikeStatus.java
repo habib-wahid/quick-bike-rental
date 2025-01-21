@@ -1,11 +1,11 @@
 package io.axoniq.demo.bikerental.coreapi.rental;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 //tag::BikeStatusEntity[]
-@Document(value = "bikes") //<.>
+@Document(value = "bike_status") //<.>
 //end::BikeStatusEntity[]
 //tag::BikeStatusClass[]
 public class BikeStatus {
@@ -30,6 +30,10 @@ public class BikeStatus {
         this.bikeType = bikeType;
         this.location = location;
         this.status = RentalStatus.AVAILABLE;
+    }
+
+    public void setStatus(RentalStatus status) {
+        this.status = status;
     }
 
     //end::Constructor[]
@@ -87,7 +91,5 @@ public class BikeStatus {
         this.renter = renter;
         this.status = RentalStatus.RENTED;
     }
-    //end:Modifiers[]
-    //end::Methods[]
 }
 //end::BikeStatusClass[]

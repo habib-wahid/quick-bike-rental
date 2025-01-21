@@ -2,22 +2,15 @@ package io.axoniq.demo.bikerental.rental.command;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.axoniq.demo.bikerental.coreapi.rental.ApproveRequestCommand;
-import io.axoniq.demo.bikerental.coreapi.rental.BikeInUseEvent;
-import io.axoniq.demo.bikerental.coreapi.rental.BikeRegisteredEvent;
-import io.axoniq.demo.bikerental.coreapi.rental.BikeRequestedEvent;
-import io.axoniq.demo.bikerental.coreapi.rental.BikeReturnedEvent;
-import io.axoniq.demo.bikerental.coreapi.rental.RegisterBikeCommand;
-import io.axoniq.demo.bikerental.coreapi.rental.RejectRequestCommand;
-import io.axoniq.demo.bikerental.coreapi.rental.RequestBikeCommand;
-import io.axoniq.demo.bikerental.coreapi.rental.RequestRejectedEvent;
-import io.axoniq.demo.bikerental.coreapi.rental.ReturnBikeCommand;
+import io.axoniq.demo.bikerental.coreapi.rental.*;
+import io.axoniq.demo.bikerental.rental.command.repository.BikeCollectionRepository;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -31,6 +24,7 @@ import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 //tag::BikeAggregateClass[]
 public class Bike {
 
+
     private static final Logger log = LoggerFactory.getLogger(Bike.class);
     //tag::BikeAggregateFields[]
     @AggregateIdentifier //<.>
@@ -40,9 +34,9 @@ public class Bike {
     private String reservedBy;
     private boolean reservationConfirmed;
 
-    public Bike() { //<.>
-    }
+    public Bike() {
 
+    }
     //end::BikeAggregateFields[]
     //tag::JsonCreator[]
     /* Constructor used to reconstruct the aggregate from a JSON based snapshot with Jackson */
@@ -50,7 +44,8 @@ public class Bike {
     public Bike(@JsonProperty("bikeId") String bikeId,
                 @JsonProperty("available") boolean isAvailable,
                 @JsonProperty("reservedBy") String reservedBy,
-                @JsonProperty("reservationConfirmed") boolean reservationConfirmed) {
+                @JsonProperty("reservationConfirmed") boolean reservationConfirmed
+    ) {
         this.bikeId = bikeId;
         this.isAvailable = isAvailable;
         this.reservedBy = reservedBy;
@@ -60,26 +55,31 @@ public class Bike {
 
     //tag::RegisterBikeCommandHandler[]
     @CommandHandler //<.>
-    public Bike(RegisterBikeCommand command) { //<.>
+    public Bike(RegisterBikeCommand command) {
+      //  this.bikeRepository = bikeRepository; //<.>
         log.info("Here bike command " + command);
         var seconds = Instant.now().getEpochSecond();
         if (seconds % 5 ==0) {
             throw new IllegalStateException("Can't accept new bikes right now");
         }
-        apply(new BikeRegisteredEvent(command.bikeId(), command.bikeType(), command.location())); //<.>
+
+        this.bikeId = command.bikeId();
+        this.isAvailable = true;
+
+        apply(new GeneralRentalEvent("BikeRegistration", command.bikeId(), command.bikeType(), command.location(), "", "")); //<.>
     }
 
-    //end::RegisterBikeCommandHandler[]
-    //tag::RequestBikeCommandHandler[]
     @CommandHandler
     public String handle(RequestBikeCommand command) {
-//        if (!this.isAvailable) {
-//            throw new IllegalStateException("Bike is already rented");
-//        }
+        System.out.println("Bikes");
         String rentalReference = UUID.randomUUID().toString();
-        apply(new BikeRequestedEvent(command.bikeId(), command.renter(), rentalReference));
+        this.reservedBy = command.renter();
+        this.reservationConfirmed = false;
+        this.isAvailable = false;
+        String paymentReference = UUID.randomUUID().toString();
+        apply(new GeneralRentalEvent("BikeRent",command.bikeId(), "", "", command.renter(), rentalReference, paymentReference, false));
 
-        return rentalReference;
+        return paymentReference;
     }
 
     //end::RequestBikeCommandHandler[]
@@ -131,14 +131,21 @@ public class Bike {
         this.reservedBy = null;
     }
 
+    @EventSourcingHandler
+    public void on(GeneralRentalEvent event) {
+        // Reconstruct state from events
+        this.bikeId = event.getBikeId();
+        this.isAvailable = event.getEventType().equals("BikeRegistration");
+        this.reservedBy = event.getRenter();
+    }
     //end::BikeReturnedEventSourcingHandler[]
     //tag::BikeRequestedEventSourcingHandler[]
-    @EventSourcingHandler
-    protected void handle(BikeRequestedEvent event) {
-        this.reservedBy = event.getRenter();
-        this.reservationConfirmed = false;
-        this.isAvailable = false;
-    }
+//    @EventSourcingHandler
+//    protected void handle(BikeRequestedEvent event) {
+//        this.reservedBy = event.getRenter();
+//        this.reservationConfirmed = false;
+//        this.isAvailable = false;
+//    }
 
     //end::BikeRequestedEventSourcingHandler[]
     //tag::BikeRequestRejectedEventSourcingHandler[]

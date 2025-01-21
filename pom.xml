@@ -32,7 +32,7 @@
 		<!-- end::mod-core-api[] -->
 		<!-- tag::mod-microservices[] -->
         <module>microservices</module>
-        <!-- end::mod-microservices[] -->
+		<!-- end::mod-microservices[] -->
 	</modules>
 	<!-- end::modules[] -->
 

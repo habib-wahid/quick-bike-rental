@@ -6,7 +6,7 @@
       <div class="columns">
         <div class="text-h4">Register Bikes</div>
         <div class="row q-gutter-sm">
-          <q-input label="Number of bikes" stack-label dense v-model="newBikeParams.count" />
+          <q-input label="Number of bikeCollection" stack-label dense v-model="newBikeParams.count" />
           <q-input label="Bike type" stack-label dense v-model="newBikeParams.type" />
           <q-btn label="Generate Bikes" icon="add_circle_outline" @click="generateBikes(newBikeParams)" />
         </div>

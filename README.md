@@ -4,7 +4,7 @@ The goal of this repo is to show how one can develop a well structured monolithi
 using [Axon Framework and Axon Server](https://developer.axoniq.io/).
 
 This starts as two services, Rental (Monolith) and Payment which work together to run the Axoniq World Wide Bike Rental Service. 
-The Rental service manages the inventory and rental status of bikes.  While the Payment service manages payment processing related to 
+The Rental service manages the inventory and rental status of bikeCollection.  While the Payment service manages payment processing related to 
 a bike rental.  
 
 ![Axoniq World Wide Bike Rental Architecture](/images/Bike-Rental-Quick-Start.monolith.png)
@@ -33,9 +33,9 @@ list of handled commands, list of handled queries, and running event processors
 
 ## Running our business
 ### Populate Inventory of Bikes
-In order to begin offering our bike rental service we will need an inventory of bikes.  To do this, navigate to the
-[requests.http](./requests.http) file, find the section with the header ```### Generate bikes``` and executing the http 
-```POST``` command shown.  This will give you an inventory of bikes which you can verify by executing the http command
+In order to begin offering our bike rental service we will need an inventory of bikeCollection.  To do this, navigate to the
+[requests.http](./requests.http) file, find the section with the header ```### Generate bikeCollection``` and executing the http 
+```POST``` command shown.  This will give you an inventory of bikeCollection which you can verify by executing the http command
 found in the```### List all``` section of [requests.http](/requests.http) file.
 
 
@@ -46,7 +46,7 @@ Now that your inventory is in place it is time to make some money!!  To simulate
 
 
 ## Evolving Rental Application monolith to microservices
-Great news!  The Axoniq World Wide Bike Rental Service is renting bikes faster than we can buy them!  As a result our
+Great news!  The Axoniq World Wide Bike Rental Service is renting bikeCollection faster than we can buy them!  As a result our
 Rental Application is experiencing some scalability issues.  To handle this increase in volume on our application it has
 been determined that we need to break out the parts of the Rental Application each in to their own service.  Our updated
 architecture now looks like the following...![Axoniq World Wide Bike Rental Microservices Architecture](/images/Bike-Rental-Quick-Start.microservices.png)
