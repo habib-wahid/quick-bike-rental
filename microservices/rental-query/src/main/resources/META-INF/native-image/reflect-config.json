@@ -1,0 +1,21 @@
+[
+  {
+    "name": "com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.thoughtworks.xstream.XStream",
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.thoughtworks.xstream.mapper.EnumMapper",
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  }
+]

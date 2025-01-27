@@ -1,50 +1,96 @@
 package io.axoniq.demo.bikerental.rental.query;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.serialization.ByteArrayDeserializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
+import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.SimpleCommandBus;
 import org.axonframework.common.transaction.TransactionManager;
-import org.axonframework.config.Configurer;
 import org.axonframework.config.ConfigurerModule;
-import org.axonframework.config.EventProcessingConfigurer;
 import org.axonframework.eventhandling.TrackingEventProcessorConfiguration;
+import org.axonframework.eventhandling.tokenstore.TokenStore;
 import org.axonframework.eventsourcing.eventstore.EventStorageEngine;
-import org.axonframework.extensions.kafka.configuration.KafkaMessageSourceConfigurer;
-import org.axonframework.extensions.kafka.eventhandling.DefaultKafkaMessageConverter;
-import org.axonframework.extensions.kafka.eventhandling.KafkaMessageConverter;
-import org.axonframework.extensions.kafka.eventhandling.consumer.AsyncFetcher;
-import org.axonframework.extensions.kafka.eventhandling.consumer.ConsumerFactory;
-import org.axonframework.extensions.kafka.eventhandling.consumer.DefaultConsumerFactory;
-import org.axonframework.extensions.kafka.eventhandling.consumer.Fetcher;
-import org.axonframework.extensions.kafka.eventhandling.consumer.streamable.KafkaEventMessage;
-import org.axonframework.extensions.kafka.eventhandling.consumer.streamable.SortedKafkaMessageBuffer;
-import org.axonframework.extensions.kafka.eventhandling.consumer.streamable.StreamableKafkaMessageSource;
+import org.axonframework.extensions.mongo.MongoTemplate;
 import org.axonframework.extensions.mongo.eventsourcing.eventstore.MongoEventStorageEngine;
+import org.axonframework.extensions.mongo.eventsourcing.tokenstore.MongoTokenStore;
 import org.axonframework.extensions.mongo.spring.SpringMongoTemplate;
 import org.axonframework.messaging.StreamableMessageSource;
+import org.axonframework.queryhandling.QueryBus;
+import org.axonframework.queryhandling.SimpleQueryBus;
+import org.axonframework.serialization.Serializer;
+import org.axonframework.serialization.json.JacksonSerializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 @Configuration
 public class AxonConfig {
+
+
+
     @Bean
-    public EventStorageEngine storageEngine(MongoDatabaseFactory factory,
-                                            TransactionManager transactionManager) {
+    public ObjectMapper objectMapper() {
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfBaseType(Object.class)
+                .build();
+
+        return new ObjectMapper()
+                .activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL);
+    }
+
+    @Bean
+    @Primary
+    public Serializer defaultSerializer(ObjectMapper objectMapper) {
+        return JacksonSerializer.builder()
+                .objectMapper(objectMapper.copy())
+                .lenientDeserialization()
+                .build();
+    }
+
+    @Bean(name = "eventSerializer")
+    public Serializer eventSerializer(ObjectMapper objectMapper) {
+        return JacksonSerializer.builder()
+                .objectMapper(objectMapper.copy())
+                .lenientDeserialization()
+                .build();
+    }
+
+    @Bean(name = "messageSerializer")
+    public Serializer messageSerializer(ObjectMapper objectMapper) {
+        return JacksonSerializer.builder()
+                .objectMapper(objectMapper.copy())
+                .lenientDeserialization()
+                .build();
+    }
+
+    @Bean
+    public TokenStore tokenStore(
+            MongoTemplate mongoTemplate,
+            @Qualifier("defaultSerializer") Serializer serializer) {
+        return MongoTokenStore.builder()
+                .mongoTemplate(mongoTemplate)
+                .serializer(serializer)
+                .build();
+    }
+
+    @Bean
+    public EventStorageEngine storageEngine(
+            MongoDatabaseFactory factory,
+            TransactionManager transactionManager,
+            @Qualifier("eventSerializer") Serializer eventSerializer,
+            @Qualifier("defaultSerializer") Serializer defaultSerializer) {
         return MongoEventStorageEngine.builder()
                 .mongoTemplate(SpringMongoTemplate.builder()
                         .factory(factory)
                         .build())
+                .eventSerializer(eventSerializer)
+                .snapshotSerializer(defaultSerializer)
                 .transactionManager(transactionManager)
-                // ...
                 .build();
     }
+
 //
 //    @Bean
 //    public KafkaMessageSource<String, byte[]> kafkaMessageSource(
@@ -132,16 +178,16 @@ public class AxonConfig {
 //    }
 //
 //
-    @Bean
-    public ConfigurerModule initialTrackingTokenConfigurerModule() {
-        TrackingEventProcessorConfiguration tepConfig =
-                TrackingEventProcessorConfiguration.forSingleThreadedProcessing()
-                        .andInitialTrackingToken(StreamableMessageSource::createTailToken);
-
-        return configurer -> configurer.eventProcessing(
-                processingConfigurer -> processingConfigurer.registerTrackingEventProcessorConfiguration(
-                        "my-processor", config -> tepConfig
-                )
-        );
-    }
+//    @Bean
+//    public ConfigurerModule initialTrackingTokenConfigurerModule() {
+//        TrackingEventProcessorConfiguration tepConfig =
+//                TrackingEventProcessorConfiguration.forSingleThreadedProcessing()
+//                        .andInitialTrackingToken(StreamableMessageSource::createTailToken);
+//
+//        return configurer -> configurer.eventProcessing(
+//                processingConfigurer -> processingConfigurer.registerTrackingEventProcessorConfiguration(
+//                        "my-processor", config -> tepConfig
+//                )
+//        );
+//    }
 }

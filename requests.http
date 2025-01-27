@@ -1,5 +1,5 @@
 ### Register a new bike
-POST http://localhost:8080/bikes?bikeType=city&location=Moscow
+POST http://localhost:8080/bikes?bikeType=city&location=tut
 
 ### Generate bikeCollection
 # First, generate some bikeCollection
