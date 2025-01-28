@@ -1,5 +1,21 @@
 ### Register a new bike
-POST http://localhost:8080/bikes?bikeType=city&location=Moscow
+POST http://localhost:8080/bikes?bikeType=city&location=Chittagong
+
+### Get Bike Status
+GET http://localhost:8083/getBike?bikeId=156eac3c-9942-448f-b9b0-ae2db433c462
+
+### Generate Distributed Rentals
+POST http://localhost:8080/generateBikeRentals?bikeId=156eac3c-9942-448f-b9b0-ae2db433c462
+Accept: text/plain
+
+### Get Payment reference
+GET http://localhost:8084/getPaymentReference?bikeId=156eac3c-9942-448f-b9b0-ae2db433c462
+
+### Payment Confirm
+POST http://localhost:8084/confirmPayment?paymentId=1f396745-1e22-4aba-b718-9a202f222a13&confirmStatus=false
+Accept: text/plain
+
+
 
 ### Generate bikeCollection
 # First, generate some bikeCollection
@@ -54,14 +70,6 @@ Accept: text/plain
 POST http://localhost:8081/payment?status=Pending&amount=10&reference=abc564sd
 Accept: text/plainread_db
 
-### Generate Distributed Rentals
-POST http://localhost:8080/generateBikeRentals?bikeId=ae3faa27-6b36-4794-89ce-d949f6e33815&loops=3&concurrency=2
-Accept: text/plain
-
-
-###
-POST http://localhost:8084/confirmPayment?paymentId=f78a43f1-e19b-4e76-87fd-62fe243b188b&confirmStatus=false
-Accept: text/plain
 
 ###
 GET http://localhost:8083/getBike?bikeId=

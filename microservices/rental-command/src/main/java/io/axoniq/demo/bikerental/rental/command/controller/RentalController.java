@@ -4,9 +4,9 @@ import io.axoniq.demo.bikerental.coreapi.rental.RegisterBikeCommand;
 import io.axoniq.demo.bikerental.rental.command.entity.BikeCollection;
 import io.axoniq.demo.bikerental.rental.command.repository.BikeCollectionRepository;
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.queryhandling.QueryGateway;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -17,39 +17,38 @@ import java.util.concurrent.CompletableFuture;
 public class RentalController {
 
 
-    private final CommandGateway commandGateway;    // <.>
-    private final QueryGateway queryGateway;        // <.>
-    //end::BusGateways[]
+    private static final Logger log = LoggerFactory.getLogger(RentalController.class);
+    private final CommandGateway commandGateway;
 
     private final BikeRentalDataGenerator bikeRentalDataGenerator;
     private final BikeCollectionRepository bikeCollectionRepository;
 
-    public RentalController(CommandGateway commandGateway, QueryGateway queryGateway, BikeRentalDataGenerator bikeRentalDataGenerator, BikeCollectionRepository bikeCollectionRepository) { // <.>
+    public RentalController(CommandGateway commandGateway, BikeRentalDataGenerator bikeRentalDataGenerator, BikeCollectionRepository bikeCollectionRepository) { // <.>
         this.commandGateway = commandGateway;
-        this.queryGateway = queryGateway;
         this.bikeRentalDataGenerator = bikeRentalDataGenerator;
         this.bikeCollectionRepository = bikeCollectionRepository;
     }
 
     @PostMapping("/bikes") // <.>
     public CompletableFuture<String> registerBike(
-            @RequestParam("bikeType") String bikeType,      // <.>
-            @RequestParam("location") String location) {    // <.>
+            @RequestParam("bikeType") String bikeType,
+            @RequestParam("location") String location) {
 
         String bikeId = UUID.randomUUID().toString();
         RegisterBikeCommand registerBikeCommand =
-                new RegisterBikeCommand(                // <.>
-                        bikeId,   // <.>
+                new RegisterBikeCommand(
+                        bikeId,
                         bikeType,
                         location);
 
         CompletableFuture<String> commandResult =
-                commandGateway.send(registerBikeCommand); //<.>
+                commandGateway.send(registerBikeCommand);
 
         BikeCollection bikeCollection = new BikeCollection(bikeId, bikeType, location);
+        log.info("Bike Save in write db " + bikeCollection.getBikeId());
         bikeCollectionRepository.save(bikeCollection);
 
-        return commandResult; // <.>
+        return commandResult;
     }
 
     @PostMapping("/bikes/batch") // <.>
@@ -63,25 +62,10 @@ public class RentalController {
         return all;
     }
 
-    @PostMapping(value = "/generateRentals")
-    public Flux<String> generateData(@RequestParam(value = "bikeType") String bikeType,
-                                     @RequestParam("loops") int loops,
-                                     @RequestParam(value = "concurrency", defaultValue = "1") int concurrency,
-                                     @RequestParam(value = "abandonPaymentFactor", defaultValue = "100") int abandonPaymentFactor,
-                                     @RequestParam(value = "delay", defaultValue = "0")int delay) {
-
-        return this.bikeRentalDataGenerator.generateRentals(bikeType, loops, concurrency, abandonPaymentFactor, delay);
-    }
-
 
     @PostMapping(value = "/generateBikeRentals")
-    public  CompletableFuture<String> generateRentalData(@RequestParam(value = "bikeId") String bikeId,
-                                                             @RequestParam("loops") int loops,
-                                                             @RequestParam(value = "concurrency", defaultValue = "1") int concurrency,
-                                                             @RequestParam(value = "abandonPaymentFactor", defaultValue = "100") int abandonPaymentFactor,
-                                                             @RequestParam(value = "delay", defaultValue = "0")int delay) {
-
-         return this.bikeRentalDataGenerator.generateBikeRentals(bikeId, loops, concurrency, abandonPaymentFactor, delay);
+    public  CompletableFuture<String> generateRentalData(@RequestParam(value = "bikeId") String bikeId) {
+         return this.bikeRentalDataGenerator.generateBikeRentals(bikeId);
     }
 
 

@@ -3,30 +3,23 @@ package io.axoniq.demo.bikerental.rental.command;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.axoniq.demo.bikerental.coreapi.rental.*;
-import io.axoniq.demo.bikerental.rental.command.repository.BikeCollectionRepository;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
-//tag::SnapshotTriggerDefinition[]
 @Aggregate(snapshotTriggerDefinition = "bikeSnapshotDefinition") //<.>
-//end::SnapshotTriggerDefinition[]
-//tag::BikeAggregateClass[]
 public class Bike {
 
 
     private static final Logger log = LoggerFactory.getLogger(Bike.class);
-    //tag::BikeAggregateFields[]
     @AggregateIdentifier //<.>
     private String bikeId;
 
@@ -37,9 +30,7 @@ public class Bike {
     public Bike() {
 
     }
-    //end::BikeAggregateFields[]
-    //tag::JsonCreator[]
-    /* Constructor used to reconstruct the aggregate from a JSON based snapshot with Jackson */
+
     @JsonCreator
     public Bike(@JsonProperty("bikeId") String bikeId,
                 @JsonProperty("available") boolean isAvailable,
@@ -51,34 +42,23 @@ public class Bike {
         this.reservedBy = reservedBy;
         this.reservationConfirmed = reservationConfirmed;
     }
-    //end::JsonCreator[]
 
-    //tag::RegisterBikeCommandHandler[]
-    @CommandHandler //<.>
+    @CommandHandler
     public Bike(RegisterBikeCommand command) {
-      //  this.bikeRepository = bikeRepository; //<.>
-        log.info("Here bike command " + command);
-        var seconds = Instant.now().getEpochSecond();
-        if (seconds % 5 ==0) {
-            throw new IllegalStateException("Can't accept new bikes right now");
-        }
-
+        log.info("Bike registe command with id {}", command.bikeId());
         this.bikeId = command.bikeId();
         this.isAvailable = true;
-
-        apply(new GeneralRentalEvent("BikeRegistration", command.bikeId(), command.bikeType(), command.location(), "", "")); //<.>
+        apply(new GeneralRentalEvent("BikeRegistration", command.bikeId(), command.bikeType(), command.location(), "", ""));
     }
 
     @CommandHandler
     public String handle(RequestBikeCommand command) {
-        System.out.println("Bikes");
         String rentalReference = UUID.randomUUID().toString();
         this.reservedBy = command.renter();
         this.reservationConfirmed = false;
         this.isAvailable = false;
         String paymentReference = UUID.randomUUID().toString();
         apply(new GeneralRentalEvent("BikeRent",command.bikeId(), "", "", command.renter(), rentalReference, paymentReference, false));
-
         return paymentReference;
     }
 
@@ -133,7 +113,6 @@ public class Bike {
 
     @EventSourcingHandler
     public void on(GeneralRentalEvent event) {
-        // Reconstruct state from events
         this.bikeId = event.getBikeId();
         this.isAvailable = event.getEventType().equals("BikeRegistration");
         this.reservedBy = event.getRenter();

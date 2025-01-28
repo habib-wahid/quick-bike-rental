@@ -35,14 +35,10 @@ public class BikeRentalDataGenerator {
     private final CommandGateway commandGateway;
     private final QueryGateway queryGateway;
     private final BikeCollectionRepository bikeCollectionRepository;
-  //  private final BikeStatusRepository bikeStatusRepository;
-
-    Logger logger = LoggerFactory.getLogger(BikeRentalDataGenerator.class);
 
     public BikeRentalDataGenerator(CommandGateway commandGateway, QueryGateway queryGateway, BikeCollectionRepository bikeCollectionRepository) {
         this.commandGateway = commandGateway;
         this.queryGateway = queryGateway;
-      //  this.bikeStatusRepository = bikeStatusRepository;
         this.bikeCollectionRepository = bikeCollectionRepository;
     }
 
@@ -150,24 +146,17 @@ public class BikeRentalDataGenerator {
         return source.get(ThreadLocalRandom.current().nextInt(source.size()));
     }
 
-    public  CompletableFuture<String> generateBikeRentals(String bikeId,
-                                              int loops,
-                                              int concurrency,
-                                              int abandonPaymentFactor,
-                                              int delay) {
+    public  CompletableFuture<String> generateBikeRentals(String bikeId) {
 
-         return this.internalBikeGenerateRentals(bikeId, loops, concurrency, abandonPaymentFactor, delay);
+         return this.internalBikeGenerateRentals(bikeId);
 
     }
 
-    private  CompletableFuture<String> internalBikeGenerateRentals(String bikeId,
-                                             int loops,
-                                             int concurrency,
-                                             int abandonPaymentFactor,
-                                             int delay) {
-   //     List<BikeStatus> bikeStatus = bikeStatusRepository.findByBikeId(bikeId);
+    private  CompletableFuture<String> internalBikeGenerateRentals(String bikeId) {
+        BikeCollection bikeCollection = bikeCollectionRepository.findById(bikeId).orElseThrow(
+                () -> new IllegalStateException("No bike found with id: " + bikeId)
+        );
         String randomRenter = randomRenter();
-        BikeCollection bikeCollection = bikeCollectionRepository.findById(bikeId).get();
         bikeCollection.setStatus(RentalStatus.REQUESTED);
         bikeCollection.setRenter(randomRenter);
         bikeCollectionRepository.save(bikeCollection);

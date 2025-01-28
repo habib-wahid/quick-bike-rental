@@ -35,13 +35,14 @@ public class KafkaConsumer {
         } else {
             assert paymentDetailsEvent != null;
             BikeStatus bikeStatus = bikeStatusRepository.findByBikeId(paymentDetailsEvent.getBikeId());
-            bikeStatusRepository.delete(bikeStatus);
+            bikeStatus.setStatus(RentalStatus.AVAILABLE);
+            bikeStatusRepository.save(bikeStatus);
         }
     }
 
     @KafkaListener(topics = "bike-registration", groupId = "bike-registration-group")
     public void consumeBikeRegistration(String event) throws JsonProcessingException {
-        log.info("Query Bike Registration event received: {}", event);
+       log.info("Query Bike Registration event received: {}", event);
        GeneralRentalEvent generalRentalEvent = objectMapper.readValue(event, GeneralRentalEvent.class);
        BikeStatus bikeStatus = new BikeStatus(generalRentalEvent.getBikeId(), generalRentalEvent.getBikeType(), generalRentalEvent.getLocation());
        bikeStatusRepository.save(bikeStatus);
