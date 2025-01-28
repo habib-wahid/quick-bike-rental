@@ -4,6 +4,9 @@ public class PaymentDetailsEvent {
     private String bikeId;
     private String paymentId;
     private PaymentApproveStatus paymentStatus;
+    public PaymentDetailsEvent() {
+
+    }
 
     public PaymentDetailsEvent(String bikeId,String paymentId, PaymentApproveStatus paymentStatus) {
         this.bikeId = bikeId;
