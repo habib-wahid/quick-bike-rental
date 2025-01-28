@@ -3,8 +3,6 @@ package io.axoniq.demo.bikerental.rental.command.controller;
 
 import io.axoniq.demo.bikerental.coreapi.payment.ConfirmPaymentCommand;
 import io.axoniq.demo.bikerental.coreapi.rental.*;
-import io.axoniq.demo.bikerental.rental.command.dto.RentalResponse;
-//import io.axoniq.demo.bikerental.rental.command.repository.BikeStatusRepository;
 import io.axoniq.demo.bikerental.rental.command.entity.BikeCollection;
 import io.axoniq.demo.bikerental.rental.command.repository.BikeCollectionRepository;
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -14,7 +12,6 @@ import org.axonframework.queryhandling.SubscriptionQueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
