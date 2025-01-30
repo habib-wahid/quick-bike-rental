@@ -1,5 +1,5 @@
 ### Register a new bike
-POST http://localhost:8080/bikes?bikeType=city&location=Chittagong
+POST http://localhost:8080/bikes?bikeType=city&location=Dhaka
 
 ### Get Bike Status
 GET http://localhost:8083/getBike?bikeId=156eac3c-9942-448f-b9b0-ae2db433c462

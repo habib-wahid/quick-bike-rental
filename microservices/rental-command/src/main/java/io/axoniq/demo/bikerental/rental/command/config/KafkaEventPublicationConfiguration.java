@@ -2,6 +2,7 @@ package io.axoniq.demo.bikerental.rental.command.config;
 
 import org.axonframework.extensions.kafka.eventhandling.KafkaMessageConverter;
 import org.axonframework.extensions.kafka.eventhandling.producer.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -14,6 +15,8 @@ import java.util.Optional;
 @Configuration
 public class KafkaEventPublicationConfiguration {
 
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String kafkaBootstrapServers;
 
     @Bean
     public ProducerFactory<String, byte[]> producerFactory() {
@@ -21,7 +24,7 @@ public class KafkaEventPublicationConfiguration {
                 .closeTimeout(Duration.ofSeconds(30))
                 .producerCacheSize(10)
                 .configuration(Map.of(
-                        "bootstrap.servers", "localhost:9092",
+                        "bootstrap.servers", kafkaBootstrapServers,
                         "key.serializer", "org.apache.kafka.common.serialization.StringSerializer",
                         "value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer"
                 ))
